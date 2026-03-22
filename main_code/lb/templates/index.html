@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Data Fusion Contest 2026</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #050505;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #141414, #000);
+}
+h1 {
+    color: #fff;
+    text-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    margin-top: 60px;
+    font-size: 2.2em;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    letter-spacing: 1px;
+}
+.c {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+.dr {
+    position: absolute;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.9));
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255,255,255,0.5);
+    animation: f linear infinite;
+}
+@keyframes f {
+    0% { transform: translateY(-50px) scaleY(1); opacity: 1; }
+    80% { transform: translateY(400px) scaleY(1.4); opacity: 0.9; }
+    100% { transform: translateY(500px) scaleY(0.4); opacity: 0; }
+}
+.sp, .ks {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 3;
+    animation: s 0.6s ease-out forwards;
+}
+.sp {
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 0 8px rgba(255,255,255,0.7);
+}
+.ks {
+    background: rgba(255,255,255,0.7);
+    box-shadow: 0 0 5px rgba(255,255,255,0.5);
+}
+.lt {
+    position: absolute;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.2em;
+    pointer-events: none;
+    z-index: 4;
+    animation: l 0.3s ease-out forwards;
+}
+@keyframes s {
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+@keyframes l {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.5); }
+}
+.t {
+    width: 90%;
+    max-width: 1100px;
+    margin-top: 50px;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    background: transparent;
+    z-index: 2;
+}
+th, td {
+    padding: 20px 25px;
+    text-align: left;
+}
+th {
+    color: #777;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #222;
+}
+tr {
+    background: rgba(15, 15, 15, 0.7);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(4px);
+}
+tr:hover {
+    transform: scale(1.015);
+    background: rgba(25, 25, 25, 0.9);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.05);
+}
+td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+.rnk { font-weight: 800; color: #fff; width: 60px; font-size: 1.2em; }
+.sc { color: #5dade2; font-weight: 700; font-size: 1.1em; text-shadow: 0 0 10px rgba(93, 173, 226, 0.4); }
+.fn { color: #888; font-family: monospace; font-size: 0.9em; }
+.tb tr:nth-child(1) .rnk { color: #ffd700; text-shadow: 0 0 15px rgba(255,215,0,0.6); }
+.tb tr:nth-child(2) .rnk { color: #c0c0c0; text-shadow: 0 0 15px rgba(192,192,192,0.6); }
+.tb tr:nth-child(3) .rnk { color: #cd7f32; text-shadow: 0 0 15px rgba(205,127,50,0.6); }
+</style>
+</head>
+<body>
+<h1>Data Fusion Contest 2026 - Задача 3 "Герои" - "Оптимизация"</h1>
+<div class="c" id="c"></div>
+<table class="t">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Имя</th>
+            <th>Скор</th>
+            <th>Файл</th>
+        </tr>
+    </thead>
+    <tbody id="tb" class="tb">
+    </tbody>
+</table>
+
+<script>
+const c = document.getElementById('c');
+let mX = 0;
+let mY = 0;
+
+document.addEventListener('mousemove', e => {
+    mX = e.pageX;
+    mY = e.pageY;
+});
+
+function c_d() {
+    const d = document.createElement('div');
+    d.classList.add('dr');
+    const w = Math.random() * 2.5 + 1.5;
+    d.style.width = w + 'px';
+    d.style.height = (w * 2.5) + 'px';
+    d.style.left = (Math.random() * 80 + 10) + 'vw';
+    d.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
+    c.appendChild(d);
+    setTimeout(() => d.remove(), 3000);
+}
+setInterval(c_d, 60);
+
+function cr_spl(x, y, n, cl) {
+    for(let i = 0; i < n; i++) {
+        const p = document.createElement('div');
+        p.classList.add(cl);
+        const s = Math.random() * 4 + 2;
+        p.style.width = s + 'px';
+        p.style.height = s + 'px';
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        const a = Math.random() * 2 * Math.PI;
+        const r = Math.random() * 90 + 30;
+        p.style.setProperty('--tx', Math.cos(a) * r + 'px');
+        p.style.setProperty('--ty', Math.sin(a) * r + 'px');
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 600);
+    }
+}
+
+document.addEventListener('click', e => {
+    cr_spl(e.pageX, e.pageY, 14, 'sp');
+});
+
+document.addEventListener('keydown', e => {
+    if (e.key.length === 1 && mX > 0 && mY > 0) {
+        const l = document.createElement('div');
+        l.classList.add('lt');
+        l.innerText = e.key;
+        l.style.left = mX + 'px';
+        l.style.top = (mY - 20) + 'px';
+        document.body.appendChild(l);
+        cr_spl(mX, mY, 8, 'ks');
+        setTimeout(() => l.remove(), 300);
+    }
+});
+
+fetch('/d')
+    .then(r => r.json())
+    .then(d => {
+        const tb = document.getElementById('tb');
+        let i = 1;
+        d.forEach(x => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="rnk">${i++}</td><td>${x.n}</td><td class="sc">${x.s.toFixed(0)}</td><td class="fn">${x.f}</td>`;
+            tb.appendChild(tr);
+        });
+    });
+</script>
+</body>
+</html>
